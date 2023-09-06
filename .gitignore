@@ -7,4 +7,6 @@
 # Unignore all dirs
 !*/
 
+.env
+
 ### Above combination will ignore all files without extension ###
