@@ -1,33 +1,29 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	_ "github.com/lib/pq"
-	"github.com/ryanProd/FrameplayTakehome/config"
+	"github.com/ryanProd/FrameplayTakehome/database"
 	"github.com/ryanProd/FrameplayTakehome/jsonUtil"
 )
 
 func main() {
 	app := fiber.New()
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s", config.Config("DB_USER"), config.Config("DB_PASSWORD"),
-		config.Config("DB_NAME"), config.Config("DB_HOST"))
+	db := database.ConnectDB()
+	defer db.Close()
 
-	db, err := sql.Open("postgres", connStr)
+	ids := []int{1, 2, 3}
+
+	users, err := database.QueryDBforUsers(db, ids)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
-	var version string
-	if err := db.QueryRow("select version()").Scan(&version); err != nil {
-		panic(err)
+	for _, val := range users {
+		fmt.Println(val.Username)
 	}
-
-	fmt.Printf("version=%s\n", version)
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString(jsonUtil.UploadJson("Frameplay"))
