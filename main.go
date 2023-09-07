@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/ryanProd/FrameplayTakehome/data"
@@ -26,15 +30,39 @@ func main() {
 		panic(err)
 	}
 
+	var jsonResponse string
 	if valid {
-		fmt.Print(users)
+		fmt.Println("Received Input from Database:")
+		fmt.Print("\n")
+		fmt.Println(users)
+		fmt.Print("\n")
+		fmt.Println("---------------------------------------------")
+		fmt.Print("\n")
+
+		postURL := "https://6ir887qv2c.execute-api.us-east-2.amazonaws.com/test/userdataproxy"
+		postBody, _ := json.Marshal(users)
+		resp, err := http.Post(postURL, "application/json", bytes.NewBuffer(postBody))
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		jsonResponse = string(body)
+
+		fmt.Println("Http POST response: ")
+		fmt.Print("\n")
+		fmt.Println(jsonResponse)
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		var output string
+		output += "Received Input from Database: \n"
 		for _, user := range users {
 			output += fmt.Sprintf("%+v", user) + "\n"
 		}
+
+		output += "\n" + "Http POST response: \n" + jsonResponse
 		return c.SendString(output)
 	})
 

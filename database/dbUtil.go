@@ -23,8 +23,6 @@ func ConnectDB() *sql.DB {
 		panic(err)
 	}
 
-	fmt.Printf("version=%s\n", version)
-
 	return db
 }
 
