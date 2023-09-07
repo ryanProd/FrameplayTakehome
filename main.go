@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/ryanProd/FrameplayTakehome/data"
 	"github.com/ryanProd/FrameplayTakehome/database"
-	"github.com/ryanProd/FrameplayTakehome/jsonUtil"
 )
 
 func main() {
@@ -21,12 +21,21 @@ func main() {
 		panic(err)
 	}
 
-	for _, val := range users {
-		fmt.Println(val.Username)
+	valid, err := data.ValidateUsers(users)
+	if err != nil {
+		panic(err)
+	}
+
+	if valid {
+		fmt.Print(users)
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString(jsonUtil.UploadJson("Frameplay"))
+		var output string
+		for _, user := range users {
+			output += fmt.Sprintf("%+v", user) + "\n"
+		}
+		return c.SendString(output)
 	})
 
 	app.Listen(":3000")

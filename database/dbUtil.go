@@ -34,9 +34,9 @@ Ideally would add more verification such as handling cases where the user_id is 
 func QueryDBforUsers(db *sql.DB, ids []int) ([]structs.User, error) {
 	var users []structs.User
 
-	for _, val := range ids {
+	for _, id := range ids {
 		var user structs.User
-		if err := db.QueryRow("SELECT * FROM accounts WHERE user_id = $1", val).Scan(&user.User_id,
+		if err := db.QueryRow("SELECT * FROM accounts WHERE user_id = $1", id).Scan(&user.User_id,
 			&user.Username, &user.Password, &user.Email, &user.Created_on); err != nil {
 			return users, err
 		}
