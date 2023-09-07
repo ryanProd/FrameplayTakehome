@@ -9,6 +9,7 @@ import (
 	"github.com/ryanProd/FrameplayTakehome/structs"
 )
 
+// Establishes conenction to database. The connection string is formed from parsing the .env variables
 func ConnectDB() *sql.DB {
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s", config.Config("DB_USER"), config.Config("DB_PASSWORD"),
 		config.Config("DB_NAME"), config.Config("DB_HOST"))
@@ -27,7 +28,8 @@ func ConnectDB() *sql.DB {
 }
 
 /*
-Ideally would add more verification such as handling cases where the user_id is not present in the DB
+With an array of unique user_id's, queries the database and
+returns the corresponding user data as an array of User structs
 */
 func QueryDBforUsers(db *sql.DB, ids []int) ([]structs.User, error) {
 	var users []structs.User

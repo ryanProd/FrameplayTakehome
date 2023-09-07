@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Used to access the .env variables
 func Config(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"github.com/ryanProd/FrameplayTakehome/structs"
 )
 
+// Checks to see if any fields are empty or invalid
 func ValidateUsers(users []structs.User) (bool, error) {
 	for i, user := range users {
 		if user.User_id <= 0 {

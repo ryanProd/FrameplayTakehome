@@ -15,16 +15,20 @@ import (
 func main() {
 	app := fiber.New()
 
+	//Opens database connection and returns *sql.DB for future database functions
 	db := database.ConnectDB()
 	defer db.Close()
 
+	//The unique user_id's used to query the database
 	ids := []int{1, 2, 3}
 
+	//Function returns array of User structs after querying database based on the unique user_id's
 	users, err := database.QueryDBforUsers(db, ids)
 	if err != nil {
 		panic(err)
 	}
 
+	//Validation to check if any fields are empty in retrieved user data
 	valid, err := data.ValidateUsers(users)
 	if err != nil {
 		panic(err)
@@ -32,6 +36,7 @@ func main() {
 
 	var jsonResponse string
 	if valid {
+		//Printing retrieved user data to STDOUT
 		fmt.Println("Received Input from Database:")
 		fmt.Print("\n")
 		fmt.Println(users)
@@ -39,6 +44,7 @@ func main() {
 		fmt.Println("---------------------------------------------")
 		fmt.Print("\n")
 
+		//Forming request to API Gateway Endpoint with retrieved user data in request body
 		postURL := "https://6ir887qv2c.execute-api.us-east-2.amazonaws.com/test/userdataproxy"
 		postBody, _ := json.Marshal(users)
 		resp, err := http.Post(postURL, "application/json", bytes.NewBuffer(postBody))
@@ -47,6 +53,7 @@ func main() {
 		}
 		defer resp.Body.Close()
 
+		//Decode response from API Gateway and print to STDOUT
 		body, err := io.ReadAll(resp.Body)
 		jsonResponse = string(body)
 
@@ -55,6 +62,7 @@ func main() {
 		fmt.Println(jsonResponse)
 	}
 
+	//Was checking out Go Fiber, so the request artefacts can be viewed at localhost:3000 too
 	app.Get("/", func(c *fiber.Ctx) error {
 		var output string
 		output += "Received Input from Database: \n"
